@@ -1,0 +1,197 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/* DESIGN TOKENS                                                       */
+/*                                                                     */
+/* A bright, high-contrast workspace. The people using this are moving */
+/* fast under kitchen lights with wet hands, so everything here leans   */
+/* toward legibility over decoration: large hit areas, plain colour     */
+/* coding, no subtle greys carrying meaning on their own.               */
+/* ------------------------------------------------------------------ */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand — deep teal reads as "money and trust" without feeling corporate */
+  --color-brand-50: #eefbf6;
+  --color-brand-100: #d5f5e8;
+  --color-brand-200: #aeead4;
+  --color-brand-300: #78d9b9;
+  --color-brand-400: #42c09a;
+  --color-brand-500: #1da57f;
+  --color-brand-600: #108566;
+  --color-brand-700: #0d6a53;
+  --color-brand-800: #0e5443;
+  --color-brand-900: #0d4638;
+
+  /* Accent — used only for the single most important action on a screen */
+  --color-accent-400: #fb923c;
+  --color-accent-500: #f97316;
+  --color-accent-600: #ea580c;
+
+  --color-ink-50: #f8fafc;
+  --color-ink-100: #f1f5f9;
+  --color-ink-200: #e2e8f0;
+  --color-ink-300: #cbd5e1;
+  --color-ink-400: #94a3b8;
+  --color-ink-500: #64748b;
+  --color-ink-600: #475569;
+  --color-ink-700: #334155;
+  --color-ink-800: #1e293b;
+  --color-ink-900: #0f172a;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-ink-100);
+  color: var(--color-ink-900);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tabular figures everywhere money is shown, so columns of rupees line up. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* ------------------------------------------------------------------ */
+/* SCROLLBARS — thin enough not to eat a menu column on a small till   */
+/* ------------------------------------------------------------------ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink-300) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--color-ink-300);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-400);
+  background-clip: content-box;
+}
+
+/* Focus rings stay visible for keyboard users - this app is keyboard-first. */
+:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+@keyframes fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: fade-slide-in 0.16s ease-out;
+}
+
+/* ------------------------------------------------------------------ */
+/* PRINTING                                                            */
+/*                                                                     */
+/* Receipts, kitchen tokens and reports all print from the same app, so */
+/* the page that is printing tags itself with a data attribute and      */
+/* everything else is hidden. No popup window, no second bundle.        */
+/* ------------------------------------------------------------------ */
+@media print {
+  body {
+    background: #fff;
+  }
+
+  /* Chrome/sidebar/buttons are tagged .no-print and always disappear. */
+  .no-print {
+    display: none !important;
+  }
+
+  /*
+   * Printing a DOCUMENT (receipt, kitchen token, purchase list): hide every
+   * top-level child of <body> except the printable sheet.
+   *
+   * Hiding only `.app-shell` is not enough - `#root` still carries
+   * `height: 100%`, so an empty full-page box stayed above the receipt and
+   * pushed it onto the second sheet of an 80mm roll. Modal and toast portals
+   * are also direct children of <body>, and they must not print either.
+   *
+   * Printing a PAGE (a report already on screen) sets no attribute at all:
+   * `.no-print` alone strips the chrome and the page prints as laid out.
+   */
+  body[data-printing="document"] > *:not(.print-only) {
+    display: none !important;
+  }
+
+  /*
+   * `.print-only` blocks inside a page (a report's printed letterhead) must
+   * show whenever anything is printing - they were invisible on reports because
+   * they were gated behind document mode.
+   */
+  .print-only {
+    display: block !important;
+  }
+
+  /*
+   * The portalled document is the exception: it is a direct child of <body>,
+   * and it must only appear when it is the thing being printed. Otherwise a
+   * receipt still mounted from a moment ago would tack itself onto a report.
+   */
+  body:not([data-printing="document"]) > .print-only {
+    display: none !important;
+  }
+
+  body[data-printing="document"],
+  body[data-printing="document"] .print-only {
+    height: auto !important;
+  }
+
+  .print-sheet {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    color: #000;
+    background: #fff;
+  }
+
+  /* Never break a bill line or a table row across two pages. */
+  tr,
+  .print-row {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+}
+
+.print-only {
+  display: none;
+}
+
+/* Thermal paper: 80mm and 58mm rolls print at these usable widths. */
+@page {
+  margin: 8mm;
+}

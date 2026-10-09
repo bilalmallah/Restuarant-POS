@@ -1,0 +1,31 @@
+{
+  "name": "easy-restaurant-backend",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "dotenv -e ../.env nodemon ./src/index.js",
+    "prod": "dotenv -e ../.env node ./src/index.js",
+    "init-db": "dotenv -e ../.env node ./seed/initializeDatabase.js",
+    "reset-db": "dotenv -e ../.env -- node ./seed/initializeDatabase.js --force",
+    "import-menu": "dotenv -e ../.env -- node ./seed/importMenu.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "http-errors": "^2.0.1",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.23.0",
+    "sequelize": "^6.37.8",
+    "yup": "^1.7.1"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^8.0.0",
+    "nodemon": "^3.1.10"
+  }
+}
